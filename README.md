@@ -154,4 +154,44 @@ scrape_configs:
 			- targets: ['localhost:9200']
 ```
 
+---
+
+## Variables exported to Prometheus / discovery
+
+The exporter exposes metrics with the prefix `foxess_`. Each metric includes a `deviceSN` label. Metric names are derived from the variable keys returned by the Fox ESS API, so exact names depend on your inverter/EMS model and firmware.
+
+Common variables you will typically see (examples):
+- `foxess_pvPower` — PV generation power (W)
+- `foxess_batPower` — Battery charge/discharge power (W)
+- `foxess_meterPower2` — Grid power (W) (import/export)
+- `foxess_soc` — Battery state of charge (%)
+- `foxess_todayYield` — Energy produced today (Wh or kWh depending on device)
+- `foxess_totalYield` — Lifetime energy produced
+- `foxess_gridVoltage` — Grid voltage (V)
+- `foxess_gridFrequency` — Grid frequency (Hz)
+- `foxess_pvVoltage` — PV array voltage (V)
+- `foxess_batteryVoltage` — Battery voltage (V)
+- `foxess_device_status` — Numeric device status
+
+Note: the exporter prefixes the original variable name with `foxess_` and replaces invalid metric characters with `_`. If a variable includes a unit, the exporter will add a `unit` label on the metric where available.
+
+How to list what your exporter is currently exposing
+
+1. Query the exporter metrics endpoint (fast, immediate):
+
+```bash
+curl http://localhost:9200/metrics | grep '^foxess_' | sort | uniq
+```
+
+2. Use Prometheus UI / Expression browser:
+
+- Open Prometheus (e.g., `http://<prometheus-host>:9090`) and enter `foxess_` in the expression box to see all matching metrics.
+
+3. Inspect the raw Fox ESS API response (advanced):
+
+- Use `main.js`'s `getRealTimeData()` or the exporter itself to capture the JSON from `/op/v1/device/real/query` — the raw keys there map to `foxess_<key>` metrics.
+
+If you'd like, I can add a small helper script that prints the raw JSON (signed) for discovery; want me to add that?
+
+
 
