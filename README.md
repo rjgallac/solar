@@ -1,5 +1,10 @@
 # FoxESS Prometheus Exporter
 
+
+An app that connects to the foxes API and grabs the readings every minute for displaying in grafana to monitor the performance of our Solar panels.
+
+![Grafana screenshot](/docs/grafana.png)
+
 Run scripts from the project root.
 
 ## Quick run
